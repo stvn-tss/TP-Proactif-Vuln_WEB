@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h1>Nouveau ticket</h1>
+  <form method="post">
+    <label>Titre <input name="title" required></label>
+    <label>Description <textarea name="body" rows="5" required></textarea></label>
+    <button>Créer</button>
+  </form>
+</div>
+{% endblock %}

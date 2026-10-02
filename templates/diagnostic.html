@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h1>Diagnostic réseau (admin)</h1>
+  <form method="post">
+    <label>Hôte à tester <input name="host" placeholder="127.0.0.1" required></label>
+    <button>Ping</button>
+  </form>
+  {% if output is not none %}<pre>{{ output }}</pre>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Résultats pour : {{ q|safe }}</h1>
+<div class="card">
+  {% for r in rows %}
+  <p><a href="/ticket/{{ r.id }}">#{{ r.id }} – {{ r.title }}</a> <span class="meta">({{ r.owner }})</span></p>
+  {% else %}
+  <p>Aucun résultat.</p>
+  {% endfor %}
+</div>
+{% endblock %}

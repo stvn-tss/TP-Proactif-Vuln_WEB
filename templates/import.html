@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h1>Importer des tickets / préférences</h1>
+  <form method="post">
+    <label>Format
+      <select name="format"><option value="yaml">YAML</option><option value="pickle">Pickle (base64)</option></select>
+    </label>
+    <label>Données <textarea name="data" rows="6" required></textarea></label>
+    <button>Importer</button>
+  </form>
+  {% if result %}<pre>{{ result }}</pre>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Mes tickets</h1>
+<div class="card">
+  {% for t in tickets %}
+  <p><a href="/ticket/{{ t.id }}">#{{ t.id }} – {{ t.title }}</a></p>
+  {% else %}
+  <p>Aucun ticket pour le moment.</p>
+  {% endfor %}
+</div>
+{% endblock %}

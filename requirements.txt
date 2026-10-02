@@ -1,0 +1,13 @@
+# Dependances VOLONTAIREMENT obsoletes / vulnerables (TP Dependabot + Trivy)
+Flask==1.1.1
+Werkzeug==0.16.0
+Jinja2==2.10.1
+MarkupSafe==1.1.1
+itsdangerous==1.1.0
+click==7.0
+PyYAML==5.3
+requests==2.19.1
+urllib3==1.23
+idna==2.7
+chardet==3.0.4
+certifi==2018.8.24

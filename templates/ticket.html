@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h1>#{{ ticket.id }} – {{ ticket.title }}</h1>
+  <p class="meta">Ouvert par {{ ticket.owner }}</p>
+  <p>{{ ticket.body }}</p>
+</div>
+<div class="card">
+  <h2>Commentaires</h2>
+  {% for c in comments %}
+  <div class="comment"><strong>{{ c.author }}</strong> : {{ c.content|safe }}</div>
+  {% else %}
+  <p>Aucun commentaire.</p>
+  {% endfor %}
+  <form method="post">
+    <label>Ajouter un commentaire <textarea name="content" rows="3" required></textarea></label>
+    <button>Publier</button>
+  </form>
+</div>
+{% endblock %}

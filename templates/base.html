@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>HelpDesk ESIEA</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <a class="brand" href="/">HelpDesk <span>ESIEA</span></a>
+  {% if user %}
+  <nav>
+    <a href="/">Mes tickets</a>
+    <a href="/ticket/new">Nouveau ticket</a>
+    <a href="/upload">Fichiers</a>
+    <a href="/preview">Aperçu de lien</a>
+    <a href="/import">Import</a>
+    <a href="/admin/diagnostic">Diagnostic</a>
+    <a href="/logout">Déconnexion ({{ user }})</a>
+  </nav>
+  <form class="search" action="/search" method="get">
+    <input name="q" placeholder="Rechercher un ticket public…">
+  </form>
+  {% endif %}
+</header>
+<main>
+{% block content %}{% endblock %}
+</main>
+<footer>Application pédagogique volontairement vulnérable – TP Proactif ESIEA</footer>
+</body>
+</html>
