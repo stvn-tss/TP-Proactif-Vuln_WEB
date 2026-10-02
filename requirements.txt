@@ -1,6 +1,6 @@
 # Dependances VOLONTAIREMENT obsoletes / vulnerables (TP Dependabot + Trivy)
 Flask==1.1.1
-Werkzeug==0.16.0
+Werkzeug==3.1.9
 Jinja2==2.10.1
 MarkupSafe==1.1.1
 itsdangerous==1.1.0
