@@ -22,13 +22,17 @@
 
 ## Dépendances (`requirements.txt`) — cibles Dependabot / Trivy
 
-Versions volontairement anciennes : `Flask 1.1.1`, `Werkzeug 0.16.0`, `Jinja2 2.10.1`, `PyYAML 5.3`,
-`requests 2.19.1`, `urllib3 1.23`, `idna 2.7`, `certifi 2018.8.24`, etc.
+Version d'origine (tag `v1-vulnerable`, à utiliser pour le CTF) : `Flask 1.1.1`, `Werkzeug 0.16.0`, `Jinja2 2.10.1`,
+`PyYAML 5.3`, `requests 2.19.1`, `urllib3 1.23`, `idna 2.7`, `certifi 2018.8.24`, etc.
+
+> **Corrigé après le scan Trivy** : toutes les dépendances sont passées à des versions sans CVE HIGH/CRITICAL
+> (`Flask 3.1.3`, `Werkzeug 3.1.9`, `PyYAML 6.0.3`, `requests 2.34.2`, `urllib3 2.8.0`…).
 
 ## Image Docker (`Dockerfile`) — cible Trivy
 
-- Image de base `python:3.8-bookworm` (Python 3.8 en fin de vie, paquets système non à jour).
-- Exécution en `root`, serveur de développement lancé en mode debug.
+- Version d'origine : `python:3.8-bookworm` (Python 3.8 en fin de vie, 2 622 CVE HIGH/CRITICAL dont 228 CRITICAL).
+- **Corrigé après le scan Trivy** : `python:3.12-slim` (0 CVE CRITICAL).
+- Reste volontairement non corrigé : exécution en `root`, serveur de développement lancé en mode debug.
 
 ## Flags (pour le futur CTF)
 

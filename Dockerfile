@@ -1,5 +1,5 @@
-# Image de base VOLONTAIREMENT ancienne (Python 3.8 en fin de vie) pour le scan Trivy
-FROM python:3.8-bookworm
+# Image de base recente et allegee (slim) apres le scan Trivy
+FROM python:3.12-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends iputils-ping \
     && rm -rf /var/lib/apt/lists/*
