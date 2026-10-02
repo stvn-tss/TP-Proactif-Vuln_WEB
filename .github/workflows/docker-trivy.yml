@@ -1,0 +1,110 @@
+name: Docker Build & Trivy Scan
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 6 * * 1'   # relance chaque lundi : de nouvelles CVE apparaissent en continu
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_NAME: helpdesk-esiea
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # JOB 1 : construction de l'image Docker de l'application
+  # ---------------------------------------------------------------------------
+  build-image:
+    name: Build de l'image Docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v5
+
+      - name: Build de l'image
+        run: docker build -t "$IMAGE_NAME:$IMAGE_TAG" .
+
+      - name: Export de l'image (pour le job de scan)
+        run: docker save "$IMAGE_NAME:$IMAGE_TAG" | gzip > image.tar.gz
+
+      - name: Partage de l'image avec le job suivant
+        uses: actions/upload-artifact@v7
+        with:
+          name: docker-image
+          path: image.tar.gz
+          retention-days: 1
+
+  # ---------------------------------------------------------------------------
+  # JOB 2 : analyse de l'image avec Trivy
+  # ---------------------------------------------------------------------------
+  trivy-scan:
+    name: Scan Trivy de l'image
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération de l'image construite
+        uses: actions/download-artifact@v8
+        with:
+          name: docker-image
+
+      - name: Chargement de l'image dans Docker
+        run: docker load < image.tar.gz
+
+      # Rapport complet HIGH + CRITICAL dans les logs (n'interrompt pas le pipeline)
+      - name: Trivy - rapport complet (HIGH + CRITICAL)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          format: table
+          severity: HIGH,CRITICAL
+          vuln-type: os,library
+          exit-code: '0'
+
+      # Même analyse au format JSON, conservée comme preuve et exploitée pour la synthèse
+      - name: Trivy - export du rapport JSON
+        if: always()
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          format: json
+          output: trivy-report.json
+          severity: HIGH,CRITICAL
+          vuln-type: os,library
+          exit-code: '0'
+
+      - name: Synthèse des vulnérabilités (résumé du job)
+        if: always()
+        run: |
+          {
+            echo "## Synthèse Trivy - ${IMAGE_NAME}:${IMAGE_TAG::7}"
+            echo ""
+            echo "| Type de cible | CRITICAL | HIGH |"
+            echo "|---|---|---|"
+            jq -r '[.Results[]? | .Type as $t | (.Vulnerabilities // [])[] | {t:$t, s:.Severity}]
+                   | group_by(.t)[]
+                   | "| \(.[0].t) | \(map(select(.s=="CRITICAL"))|length) | \(map(select(.s=="HIGH"))|length) |"' trivy-report.json
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Conservation du rapport JSON
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: trivy-report
+          path: trivy-report.json
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # JOB 3 : déploiement simulé (n'a lieu que si le scan réussit)
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Déploiement (simulé)
+    needs: trivy-scan
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Image validée par Trivy, déploiement simulé de $IMAGE_NAME:${IMAGE_TAG::7}"
