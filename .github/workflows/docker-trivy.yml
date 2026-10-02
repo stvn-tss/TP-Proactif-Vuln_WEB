@@ -99,6 +99,16 @@ jobs:
           path: trivy-report.json
           retention-days: 30
 
+      # Barrière de sécurité : le job échoue si au moins une CVE CRITICAL est détectée
+      - name: Trivy - barrière (échec si CRITICAL)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          format: table
+          severity: CRITICAL
+          vuln-type: os,library
+          exit-code: '1'
+
   # ---------------------------------------------------------------------------
   # JOB 3 : déploiement simulé (n'a lieu que si le scan réussit)
   # ---------------------------------------------------------------------------
